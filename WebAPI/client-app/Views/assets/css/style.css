@@ -1,0 +1,111 @@
+dialog{
+  border: 0;
+  padding: 0;
+  box-shadow: 3px 2px 2px rgba(0,0,0,.2);
+  border-radius: .3rem;
+}
+div[is=tree-list] summary {
+  list-style-type: none
+}
+
+div[is=tree-list] summary,
+div[is=tree-list] li {
+  padding: 0 2px;
+}
+
+div[is=tree-list] summary:hover,
+div[is=tree-list] li:hover {
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+div[is=tree-list] details>summary::after {
+  font-family: "bootstrap-icons";
+  content: '\F4FD';
+  float: right;
+}
+
+div[is=tree-list] details[open]>summary:first-of-type::after {
+  content: '\F2E9';
+}
+
+div[is=tree-list] details menu {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 5px;
+}
+
+div[is=tree-list] menu li,
+div[is=tree-list] menu details {
+  padding-left: 20px;
+}
+/*
+.json details>summary::after {
+  content: ':{}';
+  margin-left: 10px;
+}
+.json details[open]>summary::after {
+  content: '';
+}
+.json details[open]>summary>span::after {
+  content: ':';
+}
+.json details[open] menu::before {
+  content: '{';
+}
+.json details[open] menu::after{
+  content: '}';
+}
+*/
+/*Especial inputBox*/
+.inputBox{
+  position:relative;
+}
+.inputBox select,.inputBox input{
+  width:100%;
+  padding:10px;
+  outline:none;  
+  font-size:1em;
+
+  border-radius: var(--bs-border-radius);
+  border: var(--bs-border-width) solid var(--bs-btn-disabled-border-color);
+}
+.inputBox label{
+  position:absolute;
+  left:5px;
+  padding:10px;
+  pointer-events:none;
+  font-size:1em;
+  text-transform:uppercase;
+  transition:0.5s;
+}
+.inputBox select:has(option:checked[value=""]),
+.inputBox select,.inputBox input, .inputBox label{
+  color: var(--bs-btn-disabled-color); 
+  background-color: var(--bs-btn-disabled-bg);
+}
+/*.inputBox select:not(:has(option:checked[value=""])) ~ label,*/
+
+.inputBox select:valid ~ label,
+.inputBox select:focus ~ label,
+.inputBox select:disabled ~ label,
+.inputBox input:valid ~ label,
+.inputBox input:focus ~ label,
+.inputBox input:disabled ~ label
+{
+  transform:translateX(10px) translateY(-7px);
+  font-size:0.7em;
+  padding:2px 10px;
+  border-radius:2px;
+  background-color: var(--bs-btn-hover-bg);
+  color: var(--bs-btn-hover-color);
+}
+
+.inputBox select:not(:has(option:checked[value=""])),
+.inputBox select:focus,.inputBox select:disabled,
+.inputBox input:valid,.inputBox input:focus,.inputBox input:disabled
+{
+  color:var(--bs-btn-active-color);
+  background-color:var(--bs-btn-active-bg);
+  border: var(--bs-border-width) solid var(--bs-btn-active-border-color);
+}

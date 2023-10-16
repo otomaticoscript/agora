@@ -1,0 +1,192 @@
+<template id="master-template">
+    <div class="card text-bg-light">
+        <div class="card-header">
+            <h2  class="float-start">Master</h2> 
+            <span class="float-end mt-1 me-1">
+                <button class="btn btn-primary bi bi-file-plus" title="New Master" data-action="new">Nuevo</button>
+            </span>
+        </div>
+        <div class="card-body">
+            <table class="table table-white table-bordered">
+                <template id="row">
+                    <tr>
+                        <td data-property="index"></td>
+                        <td data-property="name"></td>
+                        <td data-property="modifyDate"  data-function="modifyDate.replace(/T|Z/g,' ').replace(/\+.+/g,'')"></td>
+                        <td class="text-end">
+                            <button type="button" title="Edit Master"class="btn btn-outline-primary rounded-pill bi bi-pencil-fill btn-sm" data-action="edit">
+                            </button>
+                            <button type="button" title="Delete Master"class="btn btn-outline-primary rounded-pill bi bi-trash btn-sm" data-action="delete"></button>                        
+                            <button type="button" title="Modify Master Options" class="btn btn-outline-primary rounded-pill bi bi-list-check btn-sm" data-action="modify"></button>                        
+                        </td>
+                    </tr>
+                </template>
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th style="width: 50%">Nombre</th>
+                        <th style="width: 30%">Fecha Modificacion</th>
+                        <th style="width: 20%;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <dialog is="dialog-master"  style="width:640px"></dialog>
+    <dialog is="dialog-master-option" style="width:640px"></dialog>
+</template>
+<script type="module">
+import API from './utils/API.js';
+import {status as Status} from './Enum.js';
+
+class MasterView extends HTMLElement {
+    constructor () {
+        super ();
+        this.masters=[]
+    }
+    async connectedCallback() {
+        await this.getMaster()
+        this.#render()
+        this.dialogMaster = document.querySelector("dialog[is='dialog-master']")
+        this.dialogOption = document.querySelector("dialog[is='dialog-master-option']")
+        const closeMaster = this.eventCloseMaster.bind(this)
+        const closeOption = this.eventCloseOption.bind(this)
+        const newMaster = this.eventNew.bind(this)
+        this.dialogMaster.addEventListener("close",closeMaster)
+        this.dialogOption.addEventListener("close",closeOption)
+        this.querySelector("button[data-action='new']").addEventListener('click',newMaster)
+
+    }
+    async getMaster(inner){
+        let response = await API.get("api/master")
+        if(response.ok){
+            this.masters = await response.json();
+        }
+    }
+    async eventClickBtn(event){
+        const target  = event.target
+        if(target.tagName ==="BUTTON")
+        {
+            if(target.dataset.action=="edit"){
+                this.eventEdit(event)
+            }
+            if(target.dataset.action=="delete"){
+                this.eventDelete(event)
+            }
+            if(target.dataset.action=="modify"){
+                this.eventModify(event)
+            }
+        }
+    }
+    async eventDelete(event) {
+        const index = event.target.parentNode.parentNode.dataset.value
+        const data = this.masters[index]
+        const response = await API.delete(`api/master/${data.idMaster}`)
+        if(response.ok){
+            await this.getMaster()
+            this.#renderTable(this)
+        }
+    }
+    async eventEdit(event) {
+        const index = event.target.parentNode.parentNode.dataset.value;
+        const data = this.masters[index]
+        this.dialogMaster.openDialog(data)
+    }
+    async eventCloseMaster(event){
+        let data = this.dialogMaster.returnValue
+        if(data !== ""){
+            data = JSON.parse(data);
+            let  response={};
+            if(data.idMaster !== null){
+                response = await API.post('api/master', JSON.stringify(data));
+            }else{
+                response = await API.put('api/master', JSON.stringify(data));
+            }
+            if(response.ok){
+                await this.getMaster()
+                this.#renderTable(this)
+            }else{
+                throw new Error(`Error ${response.status}:No se pudo completar la operacion`)
+            }
+        }
+    }
+    async eventCloseOption(event){
+        let info = this.dialogOption.returnValue;
+        let response={};
+        if(info !== ""){
+            info = JSON.parse(info)
+			let dataDelete = info.data.filter(item=>item.status == Status.Deleted && item.idOption !== null);
+			let dataInsert = info.data.filter(item=>item.status == Status.Inserted);
+			let dataUpdate = info.data.filter(item=>item.status == Status.Updated);
+
+            if(dataUpdate.length>0){
+                dataUpdate =  dataUpdate.map(item=>{
+                    const {idMaster, idOption, name, value, order}=item;
+                    return {idMaster, idOption, name, value, order}
+                });
+                response = await API.post('api/master/option', JSON.stringify(dataUpdate))
+                if(!response.ok){
+                    throw new Error(`Error ${response.status}:No se pudo Actualizar`)
+                }
+            }
+			
+            if(dataInsert.length>0){
+                dataInsert =  dataInsert.map(item=>{
+                    const {idMaster, idOption, name, value, order}=item;
+                    return {idMaster, idOption, name, value, order}
+                });
+                response = await API.put('api/master/option', JSON.stringify(dataInsert))
+                if(!response.ok){
+                    throw new Error(`Error ${response.status}: No se pudo Inserta`)
+                }
+            }
+			dataDelete =  dataDelete.map(item=>item.idOption);
+			dataDelete.forEach( async (item)=> await API.delete(`api/master/option/${item}`) );
+		}
+    }
+    async eventNew(event) {
+        this.dialogMaster.openDialog(null)
+    }
+    async eventModify(event) {
+        const index = event.target.parentNode.parentNode.dataset.value;
+        const data = this.masters[index];
+        let response = await API.get(`api/master/option/${data.idMaster}`)
+        if(response.ok){
+            let info =  await response.json()
+            this.dialogOption.openDialog({idMaster:(data.idMaster||null),data:info})
+        }
+    }
+
+    #render(){
+        const clone = document.querySelector('#master-template').content.cloneNode(true);
+        this.#renderTable(clone)
+        this.append(clone)
+    }
+    #renderTable(clone){
+        const inner = clone.querySelector('table.table.table-white');
+        const tbody = inner.querySelector("tbody")
+        tbody.innerHTML='';
+        const btnClick =  this.eventClickBtn.bind(this);
+        this.masters.forEach((item,index)=>{
+            item.index = index+1
+            const row = inner.querySelector("#row").content.cloneNode(true)
+            const tds = row.querySelectorAll("td[data-property]");
+            
+            tds.forEach(td=>{
+                let text = item[td.dataset.property];
+                if(td.dataset.function){
+                    const fn = new Function(td.dataset.property,`return ${td.dataset.function}`)
+                    text = fn(text)
+                }
+                td.textContent = text;
+            })
+            row.querySelector("tr").dataset.value=index;
+            row.querySelector("tr").addEventListener("click",btnClick)
+            tbody.appendChild(row)            
+        })
+    }
+}
+
+window.customElements.define('view-master', MasterView);
+</script>
