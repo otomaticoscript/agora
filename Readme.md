@@ -14,3 +14,13 @@ En la carpeta backupDB encontraras una copia de Base de Datos, con las estructur
 Encontraras una versión para MySQL (mariaDB-10.+) y otra para SQLServer (SQLServer-17.+).
 
 Para configurar la cadena de conexión habrá que ir al fichero appsettings.json que se encuentra en la carpeta de WebApi.
+
+## Mas Informacion
+
+Los ficheros Directory.build* y el directorio build contiene las dependencias de la aplicacion y la version, de esta forma se centralizado en "un solo punto" la gestion de paquetes nuget.
+
+Es preparado pero deshabilitado el uso de session encuanto se realiza el desarrollo y no se tiene claro que sistema se utilizará.
+
+Para caso de dudas del funcionamiento de los metodos y verbosHttp se ha instalado y habilitado en modo developent la libreria swagger.
+
+
