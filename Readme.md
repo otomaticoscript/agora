@@ -21,6 +21,6 @@ Los ficheros Directory.build* y el directorio build contiene las dependencias de
 
 Es preparado pero deshabilitado el uso de session encuanto se realiza el desarrollo y no se tiene claro que sistema se utilizará.
 
-Para caso de dudas del funcionamiento de los metodos y verbosHttp se ha instalado y habilitado en modo developent la libreria swagger.
+Para caso de dudas del funcionamiento de los metodos y verbosHttp se ha instalado y habilitado en modo development la libreria swagger.
 
 
