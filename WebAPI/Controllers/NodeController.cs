@@ -1,7 +1,7 @@
 using Agora.BLL;
 using Agora.Models;
 using Microsoft.AspNetCore.Mvc;
-//  Console.WriteLine(JsonSerializer.Serialize(value));
+
 namespace Agora.WebAPI.Controllers
 {
     [ApiController]
@@ -30,7 +30,6 @@ namespace Agora.WebAPI.Controllers
         [HttpPut("root/")]
         public async Task SetNodeRoot(Node node)
         {
-            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(node));
             await _nodeManager.SetNodeRoot(node);
         }
         [HttpDelete("root/{IdNode:Guid}")]

@@ -15,6 +15,8 @@ namespace Agora.BLL
         public Task RemoveField(Guid IdField);
 
         public Task<List<TemplateAllowedChildren>> GetChildrens(Guid idTemplate);
+        public Task<List<TemplateAllowedChildren>> GetChildrenByIdNode(Guid idNode);
+        
         public Task SetChildrens(TemplateAllowedChildren[] childrens);
         public Task RemoveChildren(Guid idTemplateParent, Guid idTemplate);
     }
@@ -51,7 +53,6 @@ namespace Agora.BLL
 
         public async Task RemoveTemplate(Guid idTemplate)
         {
-            //Console.WriteLine(idTemplate);
             await _templateFieldData.DeleteFieldByIdTemplateAsync(idTemplate);
             await _templateAllowedChildrenData.DeleteChildrenByIdTemplateAsync(idTemplate);
             await _templateData.DeleteTemplateAsync(idTemplate);
@@ -64,14 +65,10 @@ namespace Agora.BLL
         }
         public async Task SetFields(TemplateField[] fields)
         {
-            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(fields));
             TemplateField[] insert = fields.Where(w => w.IdField == null).ToArray();
             TemplateField[] update = fields.Where(w => w.IdField != null).ToArray();
             if (insert.Count() > 0)
             {
-#if DEBUG
-                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(insert));
-#endif
                 await _templateFieldData.InsertFieldAsync(insert);
             }
             if (update.Count() > 0)
@@ -90,7 +87,10 @@ namespace Agora.BLL
         public async Task<List<TemplateAllowedChildren>> GetChildrens(Guid idTemplate)
         {
             return await _templateAllowedChildrenData.GetChildrensAsync(idTemplate);
-
+        }
+        public async Task<List<TemplateAllowedChildren>> GetChildrenByIdNode(Guid idNode)
+        {
+            return await _templateAllowedChildrenData.GetChildrenByIdNodeAsync(idNode);
         }
         public async Task SetChildrens(TemplateAllowedChildren[] childrens)
         {

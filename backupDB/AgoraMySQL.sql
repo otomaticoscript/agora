@@ -28,9 +28,6 @@ CREATE TABLE IF NOT EXISTS `master` (
   PRIMARY KEY (`IdMaster`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Volcando datos para la tabla agora.master: ~1 rows (aproximadamente)
-REPLACE INTO `master` (`IdMaster`, `Name`, `CreateDate`, `ModifyDate`) VALUES
-	('292117a9-5586-11ee-a349-d0c5d3ee185a', 'Estados', '2023-09-17 18:13:41', '2023-09-17 18:13:41');
 
 -- Volcando estructura para tabla agora.master_option
 CREATE TABLE IF NOT EXISTS `master_option` (
@@ -38,78 +35,12 @@ CREATE TABLE IF NOT EXISTS `master_option` (
   `IdMaster` char(36) NOT NULL,
   `Name` varchar(255) DEFAULT NULL COMMENT 'Almacena el nombre de la opcion',
   `Value` varchar(255) DEFAULT NULL COMMENT 'Almacena la el valor de la opcion',
-  `Order` int(11) NOT NULL DEFAULT 0,
+  `Place` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`IdOption`),
   KEY `producto_nodo_FK` (`IdMaster`),
   CONSTRAINT `maesto_opcion_FK` FOREIGN KEY (`IdMaster`) REFERENCES `master` (`IdMaster`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Almacena las tuplas(nombre,valor) de un combo de seleccion';
 
--- Volcando datos para la tabla agora.master_option: ~4 rows (aproximadamente)
-REPLACE INTO `master_option` (`IdOption`, `IdMaster`, `Name`, `Value`, `Order`) VALUES
-	('292017a9-5586-11ee-a349-d0c5d3ee185a', '292117a9-5586-11ee-a349-d0c5d3ee185a', 'To Do', 'new', 1),
-	('292217a9-5586-11ee-a349-d0c5d3ee185a', '292117a9-5586-11ee-a349-d0c5d3ee185a', 'Doing', 'work', 2),
-	('292317a9-5586-11ee-a349-d0c5d3ee185a', '292117a9-5586-11ee-a349-d0c5d3ee185a', 'Testing', 'test', 3),
-	('292417a9-5586-11ee-a349-d0c5d3ee185a', '292117a9-5586-11ee-a349-d0c5d3ee185a', 'Done', 'done', 4);
-
-
--- Volcando estructura para tabla agora.template
-CREATE TABLE IF NOT EXISTS `template` (
-  `IdTemplate` char(36) NOT NULL DEFAULT uuid(),
-  `Name` varchar(255) DEFAULT NULL COMMENT 'Nombre de la Plantilla',
-  `ModifyDate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`IdTemplate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Volcando datos para la tabla agora.template: ~0 rows (aproximadamente)
-
--- Volcando estructura para tabla agora.template_allowed_children
-CREATE TABLE IF NOT EXISTS `template_allowed_children` (
-  `IdTemplate` char(36) NOT NULL,
-  `IdTemplateParent` char(36) NOT NULL,
-  `MaxAllowed` int(11) NOT NULL,
-  KEY `hijo_plantilla` (`IdTemplate`),
-  KEY `padre_plantilla` (`IdTemplateParent`),
-  CONSTRAINT `hijo_plantilla` FOREIGN KEY (`IdTemplate`) REFERENCES `template` (`IdTemplate`),
-  CONSTRAINT `padre_plantilla` FOREIGN KEY (`IdTemplateParent`) REFERENCES `template` (`IdTemplate`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Volcando datos para la tabla agora.template_allowed_children: ~0 rows (aproximadamente)
-
--- Volcando estructura para tabla agora.template_field
-CREATE TABLE IF NOT EXISTS `template_field` (
-  `IdField` char(36) NOT NULL DEFAULT uuid(),
-  `IdTemplate` char(36) NOT NULL,
-  `IdType` int(11) NOT NULL,
-  `IdMaster` char(36) DEFAULT NULL,
-  `Name` varchar(255) DEFAULT NULL COMMENT 'Nombre del Campo',
-  `AttributeName` varchar(50) DEFAULT '',
-  `DefaultValue` varchar(20) DEFAULT NULL,
-  `Required` tinyint(1) NOT NULL DEFAULT 0,
-  `Order` int(11) DEFAULT 0,
-  PRIMARY KEY (`IdField`),
-  KEY `formulario_plantilla` (`IdTemplate`),
-  KEY `formulario_tipo` (`IdType`),
-  CONSTRAINT `formulario_plantilla` FOREIGN KEY (`IdTemplate`) REFERENCES `template` (`IdTemplate`),
-  CONSTRAINT `formulario_tipo` FOREIGN KEY (`IdType`) REFERENCES `type_field` (`IdType`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Volcando datos para la tabla agora.template_field: ~0 rows (aproximadamente)
-
--- Volcando estructura para tabla agora.type_field
-CREATE TABLE IF NOT EXISTS `type_field` (
-  `IdType` int(11) NOT NULL AUTO_INCREMENT,
-  `Campo` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`IdType`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Volcando datos para la tabla agora.type_field: ~6 rows (aproximadamente)
-REPLACE INTO `type_field` (`IdType`, `Campo`) VALUES
-	(1, 'Boleano'),
-	(2, 'Numero'),
-	(3, 'Texto'),
-	(4, 'Seleccion'),
-	(5, 'Seleccion Multiple'),
-	(6, 'Recurso');
 
 -- Volcando estructura para tabla agora.node
 CREATE TABLE IF NOT EXISTS `node` (
@@ -123,21 +54,78 @@ CREATE TABLE IF NOT EXISTS `node` (
   CONSTRAINT `nodo_plantilla` FOREIGN KEY (`IdTemplate`) REFERENCES `template` (`IdTemplate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Almacena los nodos de mi arbol que es el producto';
 
-
 -- Volcando estructura para tabla agora.node_relation
 CREATE TABLE IF NOT EXISTS `node_relation` (
-  `IdRelacion` int(11) NOT NULL AUTO_INCREMENT,
+  `IdRelation` int(11) NOT NULL AUTO_INCREMENT,
   `IdNode` char(36) NOT NULL DEFAULT 'error',
   `IdNodeParent` char(36) NOT NULL DEFAULT 'error',
   `IdNodeRoot` char(36) NOT NULL DEFAULT 'error',
-  `Order` int(11) DEFAULT NULL,
-  PRIMARY KEY (`IdRelacion`),
+  `Place` int(11) DEFAULT NULL,
+  PRIMARY KEY (`IdRelation`) USING BTREE,
   KEY `nodo_hijo` (`IdNode`),
   KEY `nodo_raiz` (`IdNodeParent`),
-  CONSTRAINT `nodo_hijo` FOREIGN KEY (`IdNode`) REFERENCES `node` (`IdNode`),
-  CONSTRAINT `nodo_padre` FOREIGN KEY (`IdNodeParent`) REFERENCES `node` (`IdNode`),
-  CONSTRAINT `nodo_raiz` FOREIGN KEY (`IdNodeRoot`) REFERENCES `node` (`IdNode`)
+  KEY `nodo_raiz_FK` (`IdNodeRoot`),
+  CONSTRAINT `nodo_hijo_FK` FOREIGN KEY (`IdNode`) REFERENCES `node` (`IdNode`),
+  CONSTRAINT `nodo_padre_FK` FOREIGN KEY (`IdNodeParent`) REFERENCES `node` (`IdNode`),
+  CONSTRAINT `nodo_raiz_FK` FOREIGN KEY (`IdNodeRoot`) REFERENCES `node` (`IdNode`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- Volcando estructura para tabla agora.template
+CREATE TABLE IF NOT EXISTS `template` (
+  `IdTemplate` char(36) NOT NULL DEFAULT uuid(),
+  `Name` varchar(255) DEFAULT NULL COMMENT 'Nombre de la Plantilla',
+  `ModifyDate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`IdTemplate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- Volcando estructura para tabla agora.template_allowed_children
+CREATE TABLE IF NOT EXISTS `template_allowed_children` (
+  `IdTemplate` char(36) NOT NULL,
+  `IdTemplateParent` char(36) NOT NULL,
+  `MaxAllowed` int(11) NOT NULL,
+  KEY `hijo_plantilla` (`IdTemplate`),
+  KEY `padre_plantilla` (`IdTemplateParent`),
+  CONSTRAINT `hijo_plantilla` FOREIGN KEY (`IdTemplate`) REFERENCES `template` (`IdTemplate`),
+  CONSTRAINT `padre_plantilla` FOREIGN KEY (`IdTemplateParent`) REFERENCES `template` (`IdTemplate`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+-- Volcando estructura para tabla agora.template_field
+CREATE TABLE IF NOT EXISTS `template_field` (
+  `IdField` char(36) NOT NULL DEFAULT uuid(),
+  `IdTemplate` char(36) NOT NULL,
+  `IdType` int(11) NOT NULL,
+  `IdMaster` char(36) DEFAULT NULL,
+  `Name` varchar(255) DEFAULT NULL COMMENT 'Nombre del Campo',
+  `AttributeName` varchar(50) DEFAULT '',
+  `DefaultValue` varchar(20) DEFAULT NULL,
+  `Required` tinyint(1) NOT NULL DEFAULT 0,
+  `Place` int(11) DEFAULT 0,
+  PRIMARY KEY (`IdField`),
+  KEY `formulario_plantilla` (`IdTemplate`),
+  KEY `formulario_tipo` (`IdType`),
+  CONSTRAINT `formulario_plantilla` FOREIGN KEY (`IdTemplate`) REFERENCES `template` (`IdTemplate`),
+  CONSTRAINT `formulario_tipo` FOREIGN KEY (`IdType`) REFERENCES `type_field` (`IdType`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando estructura para tabla agora.type_field
+CREATE TABLE IF NOT EXISTS `type_field` (
+  `IdType` int(11) NOT NULL AUTO_INCREMENT,
+  `Field` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`IdType`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Volcando datos para la tabla agora.type_field: ~6 rows (aproximadamente)
+REPLACE INTO `type_field` (`IdType`, `Field`) VALUES
+	(1, 'Boleano'),
+	(2, 'Numero'),
+	(3, 'Texto'),
+	(4, 'Seleccion'),
+	(5, 'Seleccion Multiple'),
+	(6, 'Recurso');
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

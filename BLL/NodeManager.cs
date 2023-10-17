@@ -70,20 +70,21 @@ namespace Agora.BLL
 
             }
         }
-        public async Task RemoveNode(Guid IdNode){
+        public async Task RemoveNode(Guid IdNode)
+        {
             List<NodeRelation> relations = await _nodeRelationData.GetNodeRelationByIdNodeParentAsync(IdNode);
-            Console.WriteLine("\nRelatrions:\n");
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(relations));
-            var parents =  relations.Select(p=>p.IdNodeParent).Distinct().ToArray();
-            Console.WriteLine("\nParents:\n");
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(parents));
-            foreach(var el in parents){
-                Console.WriteLine($"Element: {el}\n");
-                await _nodeRelationData.DeleteNodeRelationAsync(el);
-            }
-            await _nodeData.DeleteNodesAsync(relations.Select(el => el.IdNode).ToArray());
-            await _nodeData.DeleteNodeAsync(IdNode);
 
+            if (relations.Count > 0)
+            {
+                Guid[] nodeChildrens = relations.Select(p => p.IdNodeParent).Distinct().ToArray();
+                foreach (var el in nodeChildrens)
+                {
+                    await _nodeRelationData.DeleteNodeRelationAsync(el);
+                }
+                await _nodeData.DeleteNodesAsync(relations.Select(el => el.IdNode).ToArray());
+            }
+            await _nodeRelationData.DeleteNodeRelationAsync(IdNode);
+            await _nodeData.DeleteNodeAsync(IdNode);
         }
     }
 }

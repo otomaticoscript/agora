@@ -16,7 +16,7 @@
     public class NodeList:NodeRoot
     {
         public Guid? IdNodeParent { get; set; }
-        public int Orden { get; set; } = 0;
+        public int Place { get; set; } = 0;
     }
 
     public class NodeRelation

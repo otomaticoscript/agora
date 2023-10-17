@@ -1,77 +1,42 @@
 <!DOCTYPE html>
 <html lang="es" dir="ltr">
-
 <head>
-
+  <title>Ágora</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta http-equiv="Content-Language" content="es">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" type="image/png" href="../assets/img/favicon.ico" />
+  <link rel="icon" type="image/png" href="../assets/img/agora.png" />
   <link rel="stylesheet" href="assets/bootstrap/bootstrap.min.css">
   <link rel="stylesheet" href="assets/bootstrap/bootstrap-icons.min.css">
   <link rel="stylesheet" href="assets/css/style.css" />
-  <title>Ágora</title>
-  <style>
-    #mainPanel section.row{
-      height: calc(100vh - 55px);      
-    }
-    details summary{
-      width: 100%;
-    }
-    #mainMenuCollapse .list-group-flush>.list-group-item{
-      border:0px;
-    }
-    json-value, ui-tree, data-table{
-      display: block;
-      margin:0;
-      padding:0;
-    }
-  </style>
 </head>
 
 <body>
   <div class="container-fluid">
     <nav class="navbar row justify-content-between menuToolTip bg-primary">
       <div class="col">
-        <a href="#"  data-bs-toggle="collapse" data-bs-target="#mainMenuCollapse">
-          <span class= "bi bi-list text-white">         
-        </span></a>
+        <a href="#" data-bs-toggle="collapse" data-bs-target="#mainMenuCollapse">
+          <span class="bi bi-list text-white">
+          </span></a>
       </div>
-      
+
       <div class="col" style="text-align: end;">
-        <button type="button" class="btn btn-link text-warning" title="log out"><span class="bi bi-door-open"></span></button>
-        <button type="button" class="btn btn-link text-white" title="profile"><span class="bi bi-person-circle"></span></button>
+        <button type="button" class="btn btn-link text-warning" title="log out"><span
+            class="bi bi-door-open"></span></button>
+        <button type="button" class="btn btn-link text-white" title="profile"><span
+            class="bi bi-person-circle"></span></button>
       </div>
     </nav>
     <article id="mainPanel">
-      <section class="row" style="align-items: stretch;" >
+      <section class="row" style="align-items: stretch;">
         <div class="col-3 collapse bg-secondary p-1 show" id="mainMenuCollapse" data-bs-parent="#mainPanel">
-          <ui-menu ></ui-menu>
+          <ui-menu></ui-menu>
         </div>
         <div class="col p-2" id="mainDraw"></div>
       </section>
     </article>
-    <!--Bootstap 5.3.2 y Vanillajs-->
   </div>
-
   <script type="text/javascript" src="assets/bootstrap/bootstrap.bundle.min.js"></script>
   <script src="app.js" type="module"></script>
-  <!--
-    <script src="../MainView.js" type="module"></script>
-
-$white: #ffffff;
-
-$theme-colors: (
-    "light":      #fafafa,
-    "dark":       #c2c4c5,
-    "primary":    #6a1873,
-    "secondary":  #3a3463,
-    "info":       #6a18731a,/*#ecccf0,*/
-    "success":    #1d9f68,
-    "warning":    #dacc1e,
-    "danger":     #e5340e,
-);
--->
 </body>
-
 </html>

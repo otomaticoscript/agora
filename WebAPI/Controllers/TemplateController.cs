@@ -61,6 +61,12 @@ namespace Agora.WebAPI.Controllers
             var result = await _templateManager.GetChildrens(idTemplate);
             return new JsonResult(result);
         }
+        [HttpGet("children/node/{idNode:Guid}")]
+        public async Task<IActionResult> GetChildrenByIdNode(Guid idNode)
+        {
+            var result = await _templateManager.GetChildrenByIdNode(idNode);
+            return new JsonResult(result);
+        }
         [HttpPost("children/")]
         [HttpPut("children/")]
         public async Task SetChildrens(TemplateAllowedChildren[] childrens)

@@ -129,7 +129,15 @@
       this.dialogNode.openDialog(this.#currentNode)
     }
     eventNew(event) {
-      this.dialogNode.openDialog(null)
+      let info = {
+        "idNode": null,
+        "idNodeParent": this.#currentNode.idNode,
+        "name": "",
+        "idTemplate": null,
+        "jsonValue": '{}',
+        "modifyDate": (new Date()).toISOString()
+      }
+      this.dialogNode.openDialog(info)
     }
     eventDelete(event) {
       API.delete(`api/node/${this.#currentNode.idNode}`).then(() => this.idNodeRoot = this.#idNodeRoot)

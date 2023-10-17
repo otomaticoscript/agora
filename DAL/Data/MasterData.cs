@@ -33,15 +33,12 @@ namespace Agora.DAL.Data
             _configuration = configuration;
             _connection = connection;
             _connection.ConnectionString = _configuration.GetConnectionString("dbSQL");
-            //_configuration.GetSection("Logging:LogLevel:Default")
-            //_configuration.GetSection("ConnectionStrings:ActiveDB")
-
         }
 		
 		#region Master
         public async Task<List<Master>> GetMastersAsync()
         {
-            List<Master> result = new List<Master>();
+            List<Master> result ;
             try
             {
                 _connection.Open();
@@ -57,7 +54,6 @@ namespace Agora.DAL.Data
 		
         public async Task InsertMasterAsync(Master master)
         {
-            //var IdMaestro = await connection.ExecuteScalarAsync<int>(MasterQueries.InsertMaster, master);
             try
             {
                 _connection.Open();
@@ -72,7 +68,6 @@ namespace Agora.DAL.Data
 		
         public async Task UpdateMasterAsync(Master master)
         {
-            //                Console.WriteLine(JsonSerializer.Serialize(master));
             try
             {
                 _connection.Open();
@@ -91,7 +86,7 @@ namespace Agora.DAL.Data
             try
             {
                 _connection.Open();
-                await _connection.ExecuteAsync(MasterQueries.DeleteMaster, new { IdMaster = IdMaster });
+                await _connection.ExecuteAsync(MasterQueries.DeleteMaster, new { IdMaster });
                 _connection.Close();
             }
             catch (Exception ex)
@@ -104,10 +99,10 @@ namespace Agora.DAL.Data
 		#region Option
         public async Task<List<MasterOption>> GetMasterOptionAsync(Guid IdMaster)
         {
-            List<MasterOption> result = new List<MasterOption>();
+            List<MasterOption> result;
             try
             {
-                result = (await _connection.QueryAsync<MasterOption>(MasterQueries.GetOptions,new {idMaster = IdMaster})).ToList();
+                result = (await _connection.QueryAsync<MasterOption>(MasterQueries.GetOptions,new {IdMaster})).ToList();
             }
             catch (Exception ex)
             {
@@ -148,7 +143,7 @@ namespace Agora.DAL.Data
             try
             {
                 _connection.Open();
-                await _connection.ExecuteAsync(MasterQueries.DeleteOptionByIdMaster, new { IdMaster = IdMaster });
+                await _connection.ExecuteAsync(MasterQueries.DeleteOptionByIdMaster, new { IdMaster });
                 _connection.Close();
             }
             catch (Exception ex)
@@ -161,7 +156,7 @@ namespace Agora.DAL.Data
             try
             {
                 _connection.Open();
-                await _connection.ExecuteAsync(MasterQueries.DeleteOptionByIdOption, new { IdOption = IdOption });
+                await _connection.ExecuteAsync(MasterQueries.DeleteOptionByIdOption, new {IdOption });
                 _connection.Close();
             }
             catch (Exception ex)

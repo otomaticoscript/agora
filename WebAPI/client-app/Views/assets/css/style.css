@@ -39,6 +39,26 @@ div[is=tree-list] menu li,
 div[is=tree-list] menu details {
   padding-left: 20px;
 }
+
+#mainPanel section.row {
+  height: calc(100vh - 55px);
+}
+
+details summary {
+  width: 100%;
+}
+
+#mainMenuCollapse .list-group-flush>.list-group-item {
+  border: 0px;
+}
+
+json-value,
+ui-tree,
+data-table {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
 /*
 .json details>summary::after {
   content: ':{}';

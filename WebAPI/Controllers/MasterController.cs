@@ -6,11 +6,7 @@ namespace Agora.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-/*
-    [Route("api/master")]
-    [Route("[controller]")]
     [Produces("application/json")]
-*/
     public class MasterController : Controller
     {
         private readonly IMasterManager _masterManager;
@@ -22,14 +18,12 @@ namespace Agora.WebAPI.Controllers
         {
             var result = await _masterManager.GetMasters();
             return new JsonResult(result);
-            //return View();
         }
         [HttpGet("option/{idMaster:Guid}")]
         public async Task<IActionResult> GetOptions(Guid idMaster)
         {
             var result = await _masterManager.GetOptions(idMaster);
             return new JsonResult(result);
-
         }
         [HttpPut]
         public async Task SetMaster(Master master)

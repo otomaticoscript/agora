@@ -94,7 +94,7 @@ namespace Agora.DAL.Data
             try
             {
                 _connection.Open();
-                await _connection.ExecuteAsync(NodeQueries.DeleteNode, new { IdNode = IdNode });
+                await _connection.ExecuteAsync(NodeQueries.DeleteNode, new { IdNode });
                 _connection.Close();
             }
             catch (Exception ex)
@@ -102,12 +102,12 @@ namespace Agora.DAL.Data
                 throw new Exception("Error BBDD NodeData.DeleteNodeAsync:", ex);
             }
         }
-        public async Task DeleteNodesAsync(Guid[] IdNode)
+        public async Task DeleteNodesAsync(Guid[] IdNodes)
         {
             try
             {
                 _connection.Open();
-                await _connection.ExecuteAsync(NodeQueries.DeleteNodes, new { IdNodes = IdNode });
+                await _connection.ExecuteAsync(NodeQueries.DeleteNodes, new { IdNodes });
                 _connection.Close();
             }
             catch (Exception ex)

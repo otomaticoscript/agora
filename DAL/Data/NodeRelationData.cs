@@ -2,8 +2,6 @@
 using Agora.Models;
 using Microsoft.Extensions.Configuration;
 using Dapper;
-using MySql.Data.MySqlClient;
-using System.Data.SqlClient;
 using System.Data;
 
 //using System.Text.Json;
@@ -76,7 +74,7 @@ namespace Agora.DAL.Data
         }
         public async Task InsertNodeRelationAsync(NodeRelation node)
         {
-            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(node));
+            
             try
             {
                 _connection.Open();

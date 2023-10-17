@@ -9,6 +9,7 @@ namespace Agora.DAL.Data
     public interface ITemplateAllowedChildrenData
     {
         public Task<List<TemplateAllowedChildren>> GetChildrensAsync(Guid IdTemplateParent);
+        public Task<List<TemplateAllowedChildren>> GetChildrenByIdNodeAsync(Guid IdNode);
         public Task<List<TemplateAllowedChildren>> GetChildrensAsync(Guid[] IdTemplateParent);
         public Task InsertChildrenAsync(TemplateAllowedChildren[] template);
         public Task UpdateChildrenAsync(TemplateAllowedChildren[] template);
@@ -33,12 +34,27 @@ namespace Agora.DAL.Data
             try
             {
                 _connection.Open();
-                result = (await _connection.QueryAsync<TemplateAllowedChildren>(TemplateAllowedChildrenQueries.GetTemplateAllowedChildren,new {IdTemplateParent=IdTemplateParent})).ToList();
+                result = (await _connection.QueryAsync<TemplateAllowedChildren>(TemplateAllowedChildrenQueries.GetTemplateAllowedChildren,new {IdTemplateParent})).ToList();
                 _connection.Close();
             }
             catch (Exception ex)
             {
                 throw new Exception("Error BBDD TemplateAllowedChildrenData.GetChildrenAsync:", ex);
+            }
+            return result;
+        }
+        public async Task<List<TemplateAllowedChildren>> GetChildrenByIdNodeAsync(Guid IdNode)
+        {
+            List<TemplateAllowedChildren> result;
+            try
+            {
+                _connection.Open();
+                result = (await _connection.QueryAsync<TemplateAllowedChildren>(TemplateAllowedChildrenQueries.GetTemplateAllowedChildrenByIdNode,new {IdNode})).ToList();
+                _connection.Close();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error BBDD TemplateAllowedChildrenData.GetChildrenByIdNodeAsync:", ex);
             }
             return result;
         }

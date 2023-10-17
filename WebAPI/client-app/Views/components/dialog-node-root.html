@@ -1,6 +1,6 @@
 <template id="dialog-root">
   <style>
-    form#formNodeRoot label.input-group-text{
+    form#formNodeRoot label.input-group-text {
       min-width: 150px;
       text-align: right;
       display: inline-block;
@@ -33,15 +33,15 @@
   import * as Enum from './Enum.js';
   import API from './utils/API.js';
   export default class DialogNodeRoot extends HTMLDialogElement {
-    #info ={}
-    #default=()=> ({
-          "idNode":null,
-          "name":"",
-          "idTemplate":null,
-          "jsonValue":'{}',
-          "modifyDate":(new Date()).toISOString()
-        });
-    #fields=[]
+    #info = {}
+    #default = () => ({
+      "idNode": null,
+      "name": "",
+      "idTemplate": null,
+      "jsonValue": '{}',
+      "modifyDate": (new Date()).toISOString()
+    });
+    #fields = []
     constructor() {
       super();
     }
@@ -62,20 +62,20 @@
       this.jsonValues = this.querySelector("json-values");
     }
     async openDialog(info) {
-      this.jsonValues.setAttribute("schema","[]");
+      this.jsonValues.setAttribute("schema", "[]");
       this.#loadTemplates();
       const selectIdTemplate = this.querySelector('select#idTemplate');
-      if(info){
-        this.#info = {...info};
+      if (info.idNode) {
+        this.#info = { ...info };
         await this.#loadField(info.idTemplate);
         this.#info.jsonValue = JSON.parse(info.jsonValue);
-        this.querySelector(`#name`).value=info.name;
+        this.querySelector(`#name`).value = info.name;
         selectIdTemplate.value = info.idTemplate;
-        selectIdTemplate.setAttribute("disabled",true);
-        this.jsonValues.item=this.#info.jsonValue;
-      }else{
+        selectIdTemplate.setAttribute("disabled", true);
+        this.jsonValues.item = this.#info.jsonValue;
+      } else {
         selectIdTemplate.removeAttribute("disabled");
-        this.#info = this.#default();
+        this.#info = info || this.#default();
         this.jsonValues.reset();
       }
       this.showModal();
@@ -85,11 +85,11 @@
       event.preventDefault();
       const jsonValues = this.jsonValues;
       const info = this.#info
-      info.jsonValue={}
-      this.#fields.forEach(field=>{
-          const input  = jsonValues.querySelector(`#${field.attributeName}`);
-          let value = input.value || input.checked
-          info.jsonValue[field.attributeName] = value;
+      info.jsonValue = {}
+      this.#fields.forEach(field => {
+        const input = jsonValues.querySelector(`#${field.attributeName}`);
+        let value = input.value || input.checked
+        info.jsonValue[field.attributeName] = value;
       })
       info.jsonValue = JSON.stringify(info.jsonValue);
       info.idTemplate = this.querySelector(`#idTemplate`).value;
@@ -110,25 +110,41 @@
       this.#loadField(idTemplate);
     }
 
-    async #loadField(idTemplate){
+    async #loadField(idTemplate) {
       if (idTemplate) {
         let response = await API.get(`api/template/field/${idTemplate}`)
         if (response.ok) {
           const schema = await response.text();
-          this.jsonValues.setAttribute("schema",schema);
+          this.jsonValues.setAttribute("schema", schema);
           this.#fields = JSON.parse(schema);
         }
       }
     }
-    async #loadTemplates(value = null) {
-      let response = await API.get("api/template")
-      let templates={}
+    async #getTemplateAllowed() {
+      let templates = []
+      let response = await API.get("api/template");
       if (response.ok) {
-          templates = await response.json()
+        templates = await response.json();
+        if (this.#info.idNodeParent) {
+          response = await API.get(`api/template/children/node/${this.#info.idNodeParent}`);
+          let templateAllowed = await response.json();
+          templates = templates.map((child) =>{
+            if(templateAllowed.some(f => f.maxAllowed > 0 && f.idTemplate == child.idTemplate)){
+              return child;
+            }
+            return null;
+          }).filter(f=>f!==null);
+        }
       }
+      return templates;
+    }
+    async #loadTemplates(value = null) {
+      let templates = await this.#getTemplateAllowed();
+      debugger
       const cbTemplate = this.querySelector("#idTemplate");
       cbTemplate.querySelectorAll("[value]").forEach(item => item.value != '' && cbTemplate.removeChild(item));
       templates.forEach(item => {
+        debugger
         let optionItem = document.createElement("OPTION")
         optionItem.value = item.idTemplate
         optionItem.textContent = item.name

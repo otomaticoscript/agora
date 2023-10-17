@@ -22,7 +22,7 @@
         public const string DeleteNode = @"DELETE FROM node  WHERE IdNode = @IdNode;";
         public const string DeleteNodes = @"DELETE FROM node  WHERE IdNode in @IdNodes;";
         public const string GetNodesListByIdNodeRoot = @"
-        SELECT node.*, template.name AS NameTemplate, node_relation.IdNodeParent, ifnull(node_relation.`Order`,0) AS `Order`
+        SELECT node.*, template.name AS NameTemplate, node_relation.IdNodeParent, IFNULL(node_relation.Place,0) AS `Order`
         FROM node
         INNER JOIN template on template.IdTemplate = node.IdTemplate
         LEFT join node_relation  on node_relation.IdNode = node.IdNode
