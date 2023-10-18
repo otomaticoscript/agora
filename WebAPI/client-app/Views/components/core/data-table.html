@@ -1,60 +1,58 @@
 <script>
     class DataTable extends HTMLElement {
-        _items = []
-        _header = []
+        #items = []
+        #header = []
         constructor() {
             super();
-            this.template = this.querySelector('template').content;
+            this.template = this.querySelector('template')?.content;
         }
         static get observedAttributes() {
             return ['items', 'header'];
         }
         attributeChangedCallback(name, oldValue, newValue) {
-            this[`_${name}`] = JSON.parse(newValue);
+            let table = this.querySelector('TABLE')
+            if (table) this.removeChild(table);
+            if (name == 'header') {
+                this.#header = JSON.parse(newValue);
+            }
             if (name == 'items') {
-                this.querySelectorAll(`table`).forEach(table => {
-                    this.removeChild(table);
-                });
+                this.#items = JSON.parse(newValue);
             }
             this.render();
         }
         connectedCallback() {
-            const header = this.getAttribute("header");
-            if(header){
-                this.render()
-            }
+            this.render()
         }
-        #theader(table) {
-            if (Array.isArray(this._header)) {
-                const theader = table.createTHead();
-                const tr = theader.insertRow(-1)
-                this._header.forEach(({ text, style, className }) => {
-                    const th = document.createElement('th');
-                    th.textContent = text;
-                    tr.appendChild(th);
-                    if (style) {
-                        const entriesStyle = Object.entries(style);
-                        let styleList = entriesStyle.map(([prop, val]) => `${prop}:${val}`);
-                        th.style = styleList.join(';')
-                    }
-                    if (className) {
-                        const listClass = className.split(' ');
-                        listClass.forEach(el => th.classList.add(el));
-                    }
-                })
-            }
+        createHeader() {
+            const thead = document.createElement('THEAD')
+            const tr = thead.insertRow(-1)
+            this.#header?.forEach(({ text, style, className }) => {
+                const th = document.createElement('TH');
+                th.textContent = text;
+                if (style) {
+                    Object.entries(style).forEach(([prop, val]) => {
+                        th.style.setProperty(prop, val)
+                    })
+                }
+                if (className) {
+                    th.className = className;
+                }
+                tr.appendChild(th);
+            })
+            return thead;
         }
-        #tbody(tbody) {
-            this._items.forEach(item => {
+        createBody() {
+            const tbody = document.createElement('TBODY');
+            this.#items?.forEach(item => {
                 const tr = tbody.insertRow(-1);
-                this._header.forEach(head => {
+                this.#header.forEach(head => {
                     const { slot, value } = head;
                     const td = tr.insertCell(-1);
                     if (slot) {
                         let clone = this.template.cloneNode(true)
                         clone = clone.querySelector(`[slot=${slot}]`);
                         if (clone) {
-                            clone.innerHTML = Object.replaceEntries(clone.innerHTML,item)
+                            clone.innerHTML = Object.replaceEntries(clone.innerHTML, item)
                             td.appendChild(clone)
                         }
                     } else {
@@ -62,34 +60,34 @@
                     }
                 })
             })
-
+            if (!(this.#items?.length)) {
+                const tr = tbody.insertRow(-1)
+                const td = tr.insertCell(-1);
+                td.textContent = "No hay datos";
+                td.colSpan = this.#header.length ?? 1;
+                td.style.textAlign = "center";
+            }
+            return tbody
         }
-        #applyClassName(table) {
+
+        render() {
+            const table = document.createElement('TABLE');
+            const thead = this.createHeader()
+            const tbody = this.createBody()
+
             const tableClass = this.getAttribute(':class-table') || this.dataset.class
             const theadClass = this.getAttribute(':class-thead') || this.dataset.thead
             const tbodyClass = this.getAttribute(':class-tbody') || this.dataset.tbody
 
-            tableClass?.split(' ').forEach(className => table.classList.add(className))
-            theadClass?.split(' ').forEach(className => table.querySelector('thead')?.classList.add(className))
-            tbodyClass?.split(' ').forEach(className => table.querySelector('tbody')?.classList.add(className))
-        }
-        render() {
-            this.innerHTML =''
-            const table = document.createElement('TABLE');
+            table.appendChild(thead)
+            table.appendChild(tbody)
             this.appendChild(table)
-            this.#theader(table);
-            const tbody = table.tBodies[0] || table.createTBody();
-            if (this._items?.length == 0) {
-                const tr = tbody.insertRow(-1)
-                const td = tr.insertCell(-1);
-                td.textContent = "No hay datos";
-                td.colSpan = this._header.length ?? 1;
-                td.style.textAlign = "center";
-            } else {
-                this.#tbody(tbody)
-            }
-            this.#applyClassName(table)
+
+            if (tableClass) table.className = tableClass
+            if (theadClass) thead.className = theadClass
+            if (tbodyClass) tbody.className = tbodyClass
         }
     }
+    
     window.customElements.define("data-table", DataTable);
 </script>

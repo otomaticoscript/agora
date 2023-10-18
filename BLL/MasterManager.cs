@@ -12,7 +12,7 @@ namespace Agora.BLL
         public Task SetOptions(MasterOption[] options);
         public Task RemoveOptions(Guid idOption);
     }
-	
+
     public class MasterManager : IMasterManager
     {
         private readonly IMasterData _masterData;
@@ -20,8 +20,8 @@ namespace Agora.BLL
         {
             _masterData = masterData;
         }
-		
-		#region Master
+
+        #region Master
         public async Task<List<Master>> GetMasters()
         {
             return await _masterData.GetMastersAsync();
@@ -38,38 +38,38 @@ namespace Agora.BLL
                 await _masterData.UpdateMasterAsync(master);
             }
         }
-		
+
         public async Task RemoveMaster(Guid idMaster)
         {
-            Console.WriteLine(idMaster);
             await _masterData.DeleteOptionsByIdMasterAsync(idMaster);
             await _masterData.DeleteMasterAsync(idMaster);
         }
-		#endregion
-		
-		#region Option
-		public async Task<List<MasterOption>> GetOptions(Guid idMaster)
+        #endregion
+
+        #region Option
+        public async Task<List<MasterOption>> GetOptions(Guid idMaster)
         {
             return await _masterData.GetMasterOptionAsync(idMaster);
         }
-		
-		public async Task SetOptions(MasterOption[] options){
-			MasterOption[] insert = options.Where(w=>w.IdOption==null).ToArray();
-			MasterOption[] update = options.Where(w=>w.IdOption!=null).ToArray();
-			if (insert.Count()>0)
+
+        public async Task SetOptions(MasterOption[] options)
+        {
+            MasterOption[] insert = options.Where(w => w.IdOption == null).ToArray();
+            MasterOption[] update = options.Where(w => w.IdOption != null).ToArray();
+            if (insert.Count() > 0)
             {
-                //insert.forEach(item_=> item.IdOption = Guid.NewGuid);
                 await _masterData.InsertOptionAsync(insert);
             }
-            if (update.Count()>0)
+            if (update.Count() > 0)
             {
                 await _masterData.UpdateOptionAsync(update);
             }
-		}
-		
-		public async Task RemoveOptions(Guid idOption){
-			await _masterData.DeleteOptionAsync(idOption);
-		}
-		#endregion
+        }
+
+        public async Task RemoveOptions(Guid idOption)
+        {
+            await _masterData.DeleteOptionAsync(idOption);
+        }
+        #endregion
     }
 }

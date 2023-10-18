@@ -51,7 +51,6 @@ namespace Agora.BLL
         }
         public async Task SetNode(NodeList node)
         {
-            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(node)+"\n");
             if (node.IdNode != null)
             {
                 await _nodeData.UpdateNodeAsync(node);
@@ -73,7 +72,6 @@ namespace Agora.BLL
                         IdNodeRoot = node.IdNodeParent ?? Guid.Empty,
                     };
                 }
-                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(relation)+"\n");
                 await _nodeRelationData.InsertNodeRelationAsync(relation);
 
             }

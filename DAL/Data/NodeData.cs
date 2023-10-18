@@ -2,8 +2,6 @@
 using Agora.Models;
 using Microsoft.Extensions.Configuration;
 using Dapper;
-using MySql.Data.MySqlClient;
-using System.Data.SqlClient;
 using System.Data;
 
 //using System.Text.Json;
