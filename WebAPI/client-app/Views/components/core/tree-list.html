@@ -1,8 +1,5 @@
-<script type="module">
-    import API from './utils/API.js';
-    import { viewInMain } from './global.js';
-
-    class TreeList extends HTMLDivElement  {
+<script>
+    class TreeList extends HTMLElement  {
         #item = {}
         #html=null
         constructor() {
@@ -59,5 +56,5 @@
         }
     }
 
-    window.customElements.define('tree-list', TreeList,{ extends: 'div'});
+    window.customElements.define('tree-list', TreeList);
 </script>

@@ -22,7 +22,7 @@
     public class NodeRelation
     {
         public int IdRelation { get; set; }
-        public int? Order { get; set; }
+        public int? Place { get; set; }
         public Guid IdNode { get; set; }
         public Guid IdNodeParent { get; set; }
         public Guid IdNodeRoot { get; set; }

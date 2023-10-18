@@ -19,7 +19,10 @@
             this.render();
         }
         connectedCallback() {
-            this.render()
+            const header = this.getAttribute("header");
+            if(header){
+                this.render()
+            }
         }
         #theader(table) {
             if (Array.isArray(this._header)) {
@@ -51,9 +54,8 @@
                         let clone = this.template.cloneNode(true)
                         clone = clone.querySelector(`[slot=${slot}]`);
                         if (clone) {
-                            clone.innerHTML = clone.innerHTML.replaceAll('${' + value + '}', item[value])
+                            clone.innerHTML = Object.replaceEntries(clone.innerHTML,item)
                             td.appendChild(clone)
-                            //td.insertAdjacentHTML('beforeend', template.innerHTML.replaceAll('${' + value + '}', item[value]))
                         }
                     } else {
                         td.textContent = item[value];
@@ -72,6 +74,7 @@
             tbodyClass?.split(' ').forEach(className => table.querySelector('tbody')?.classList.add(className))
         }
         render() {
+            this.innerHTML =''
             const table = document.createElement('TABLE');
             this.appendChild(table)
             this.#theader(table);

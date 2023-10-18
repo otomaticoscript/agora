@@ -19,7 +19,8 @@
         SELECT * FROM nodeRelation;";
         public const string InsertNodeRelation = @"
         INSERT INTO node_relation (IdNode, IdNodeParent,  IdNodeRoot, Place)
-        VALUES (@IdNode, @IdNodeParent, @IdNodeRoot, (SELECT (COALESCE(MAX(Place), 0)+1) FROM node_relation WHERE IdNodeParent =@IdNodeParent));";
+        Select @IdNode, @IdNodeParent, @IdNodeRoot, (COALESCE(MAX(Place), 0)+1)
+        FROM node_relation WHERE IdNodeParent = @IdNodeParent;";
         public const string UpdateNodeRelation = @"
         UPDATE node_relation 
             SET IdNode = @IdNode,

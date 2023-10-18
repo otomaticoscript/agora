@@ -65,7 +65,7 @@
       this.jsonValues.setAttribute("schema", "[]");
       this.#loadTemplates();
       const selectIdTemplate = this.querySelector('select#idTemplate');
-      if (info.idNode) {
+      if (info?.idNode) {
         this.#info = { ...info };
         await this.#loadField(info.idTemplate);
         this.#info.jsonValue = JSON.parse(info.jsonValue);
@@ -128,23 +128,21 @@
         if (this.#info.idNodeParent) {
           response = await API.get(`api/template/children/node/${this.#info.idNodeParent}`);
           let templateAllowed = await response.json();
-          templates = templates.map((child) =>{
-            if(templateAllowed.some(f => f.maxAllowed > 0 && f.idTemplate == child.idTemplate)){
+          templates = templates.map((child) => {
+            if (templateAllowed.some(f => f.maxAllowed > 0 && f.idTemplate == child.idTemplate)) {
               return child;
             }
             return null;
-          }).filter(f=>f!==null);
+          }).filter(f => f !== null);
         }
       }
       return templates;
     }
     async #loadTemplates(value = null) {
       let templates = await this.#getTemplateAllowed();
-      debugger
       const cbTemplate = this.querySelector("#idTemplate");
       cbTemplate.querySelectorAll("[value]").forEach(item => item.value != '' && cbTemplate.removeChild(item));
       templates.forEach(item => {
-        debugger
         let optionItem = document.createElement("OPTION")
         optionItem.value = item.idTemplate
         optionItem.textContent = item.name

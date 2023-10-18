@@ -4,39 +4,39 @@ dialog{
   box-shadow: 3px 2px 2px rgba(0,0,0,.2);
   border-radius: .3rem;
 }
-div[is=tree-list] summary {
+tree-list summary {
   list-style-type: none
 }
 
-div[is=tree-list] summary,
-div[is=tree-list] li {
+tree-list summary,
+tree-list li {
   padding: 0 2px;
 }
 
-div[is=tree-list] summary:hover,
-div[is=tree-list] li:hover {
+tree-list summary:hover,
+tree-list li:hover {
   background-color: var(--bs-primary-bg-subtle);
 }
 
-div[is=tree-list] details>summary::after {
+tree-list details>summary::after {
   font-family: "bootstrap-icons";
   content: '\F4FD';
   float: right;
 }
 
-div[is=tree-list] details[open]>summary:first-of-type::after {
+tree-list details[open]>summary:first-of-type::after {
   content: '\F2E9';
 }
 
-div[is=tree-list] details menu {
+tree-list details menu {
   list-style-type: none;
   margin: 0;
   padding: 0;
   margin-bottom: 5px;
 }
 
-div[is=tree-list] menu li,
-div[is=tree-list] menu details {
+tree-list menu li,
+tree-list menu details {
   padding-left: 20px;
 }
 
@@ -53,7 +53,7 @@ details summary {
 }
 
 json-value,
-ui-tree,
+tree-list,
 data-table {
   display: block;
   margin: 0;

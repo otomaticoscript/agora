@@ -51,7 +51,7 @@ namespace Agora.BLL
         }
         public async Task SetNode(NodeList node)
         {
-            //Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(node));
+            Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(node)+"\n");
             if (node.IdNode != null)
             {
                 await _nodeData.UpdateNodeAsync(node);
@@ -59,13 +59,21 @@ namespace Agora.BLL
             else
             {
                 await _nodeData.InsertNodeAsync(node);
-                NodeRelation? relationParent = await _nodeRelationData.GetNodeRelationByIdNodeAsync(node.IdNodeParent ?? Guid.Empty);
-                NodeRelation relation = new NodeRelation()
+                NodeRelation? relation = await _nodeRelationData.GetNodeRelationByIdNodeAsync(node.IdNodeParent ?? Guid.Empty);
+                if (relation != null)
                 {
-                    IdNode = node.IdNode ?? Guid.Empty,
-                    IdNodeParent = node.IdNodeParent ?? Guid.Empty,
-                    IdNodeRoot = relationParent?.IdNodeRoot ?? node.IdNodeParent ?? Guid.Empty,
-                };
+                    relation.IdNode = node.IdNode ?? Guid.Empty;
+                }
+                else
+                {
+                    relation = new NodeRelation()
+                    {
+                        IdNode = node.IdNode ?? Guid.Empty,
+                        IdNodeParent = node.IdNodeParent ?? Guid.Empty,
+                        IdNodeRoot = node.IdNodeParent ?? Guid.Empty,
+                    };
+                }
+                Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(relation)+"\n");
                 await _nodeRelationData.InsertNodeRelationAsync(relation);
 
             }

@@ -1,4 +1,37 @@
-export function loadComponent(file) {
+export function viewInMain({ componentName, main = '#divMain' }) {
+  let divMain = {};
+  if (typeof main == 'string') {
+    divMain = document.querySelector(main);
+  }
+  if (main instanceof HTMLElement) {
+    divMain = main;
+  }
+
+  if (divMain instanceof HTMLElement && componentName) {
+    const component = document.createElement(componentName);
+    divMain.appendChild(component);
+  } else {
+    throw new Error("No se pudo cargar el component");
+  }
+}
+export function convertToOptionList(list=[],{value='value',text='text'}){
+  return list.map(item=>{
+    return {value:item[value],text:item[text]}
+  })
+}
+export function loadComboBox(list=[],comboBox,value=null){
+  list.forEach(item=>{
+    let optionItem = document.createElement("OPTION")
+    optionItem.value = item.value
+    optionItem.textContent = item.text
+    if (value && value === item.value) {
+      optionItem.selected = true;
+    }
+    comboBox.appendChild(optionItem);
+  })
+}
+// Obsoleto: se ha pasado esta funcion para el objeto Window
+ export function loadComponent(file) {
   return new Promise((resolve, reject) => {
     fetch(file)
       .then(result => {
@@ -27,29 +60,4 @@ export function loadComponent(file) {
       })
       .catch(reject);
   });
-}
-export function viewInMain({ componentName, main = '#divMain' }) {
-  let divMain = {};
-  if (typeof main == 'string') {
-    divMain = document.querySelector(main);
-  }
-  if (main instanceof HTMLElement) {
-    divMain = main;
-  }
-
-  if (divMain instanceof HTMLElement && componentName) {
-    const component = document.createElement(componentName);
-    divMain.appendChild(component);
-  } else {
-    throw new Error("No se pudo cargar el component");
-  }
-}
-
-Object.prototype.replaceEntries=(sourceText,O) =>{
-  let entriesReplace = Object.entries(O)
-  entriesReplace.forEach((item) => {
-    const [property, value] = item
-    sourceText = sourceText.replaceAll(`\${${property}}`, value || '')
-  })
-  return sourceText
 }

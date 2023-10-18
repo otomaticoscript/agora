@@ -1,10 +1,10 @@
 <template id="dialog-template-children">
   <style>
-  dialog[is=dialog-template-children] data-table tbody td:first-child{
-    background-color: #f8f9fa;
-    border-color: #c6c7c8;
-    border-width: 1px;
-  }
+    dialog[is=dialog-template-children] data-table tbody td:first-child {
+      background-color: #f8f9fa;
+      border-color: #c6c7c8;
+      border-width: 1px;
+    }
   </style>
   <form id="formChildren" class="card" method="dialog">
     <div class="card-header">
@@ -23,18 +23,13 @@
         <button class="btn btn-primary bi bi-plus" id="add" type="button"></button>
       </div>
       <div class="mt-3 overflow-y-auto" style="min-height: 180px;">
-        <data-table data-class="table table-white table-bordered mt-2" style="width: 98%;">
+        <data-table style="width: 98%;" :class-table="table table-white table-bordered mt-2"
+          :class-thead="table-light text-center">
           <template>
             <div slot="action" class="text-end">
-              <!--
-                <button type="button" title="Move Up" 
-                class="btn btn-outline-primary rounded-pill bi bi-arrow-up btn-sm"
-                data-action="moveUp" data-value="${index}">
-                </button>
-              -->
               <button type="button" title="Delete Option"
-                class="btn btn-outline-primary rounded-pill bi bi-trash btn-sm"
-                data-action="delete"data-value="${index}">
+                class="btn btn-outline-primary rounded-pill bi bi-trash btn-sm" data-action="delete"
+                data-value="${index}">
               </button>
             </div>
           </template>
@@ -50,53 +45,68 @@
 <script type="module">
   import * as Enum from './Enum.js';
   import API from './utils/API.js';
+  import * as $global from './global.js';
+
   export default class DialogChildren extends HTMLDialogElement {
     #info = {};
     templates = [];
-    header=[
-      {text:"#",style:{width: "1%"}},
-      {text:"Plantilla",value:"idTemplate"},
-      {text:"Maximo",value:"maxAllowed",style:{width: "10%"}},
-      {text:"",value:"index",slot:"action",style:{width: "20%"}}
+    header = [
+      { text: "#", style: { width: "1%" } },
+      { text: "Plantilla", value: "idTemplate" },
+      { text: "Maximo", value: "maxAllowed", style: { width: "10%" } },
+      { text: "", value: "index", slot: "action", style: { width: "20%" } }
     ]
     constructor() {
       super();
     }
 
-    async connectedCallback() {
+    connectedCallback() {
       const clone = document.querySelector('#dialog-template-children').content.cloneNode(true);
       this.appendChild(clone);
 
-      this.dataTable = this.querySelector("data-Table");
-      this.dataTable.setAttribute("header",JSON.stringify(this.header));
+      this.dataTable = this.querySelector("data-table");
+      this.dataTable.setAttribute("header", JSON.stringify(this.header));
+      
+      this.form = this.querySelector("form#formChildren")
 
       const onCancel = this.eventCancel.bind(this);
       const onSave = this.eventSave.bind(this);
       const onAdd = this.eventAdd.bind(this);
+      const btnClick = this.eventClickBtn.bind(this);
 
-      this.querySelectorAll('[data-target="close"]').forEach(btn => 
+      this.dataTable.addEventListener("click", btnClick);
+
+      this.querySelectorAll('[data-target="close"]').forEach(btn =>
         btn.addEventListener("click", onCancel)
       );
-      this.querySelector("#save").addEventListener("click", onSave);
+      this.form.addEventListener("submit", onSave);
       this.querySelector("#add").addEventListener("click", onAdd);
     }
-    async openDialog(info) {
+
+    set template(templates) {
+      const cbTemplate = this.querySelector("#idTemplate");
+      cbTemplate.querySelectorAll("[value]").forEach(item => item.value != '' && cbTemplate.removeChild(item));
+      const list = $global.convertToOptionList(templates, { text: 'name', value: 'idTemplate' });
+      $global.loadComboBox(list, cbTemplate, '')
+    }
+
+    openDialog(info) {
       this.showModal();
-      this.#loadTemplates();
       if (info.idTemplate) {
+        info.data.forEach(data=>data.status = Enum.status.None)
         this.#info = info;
       } else {
         throw new Error("Error esta modal no ha recibido datos")
       }
-      this.#renderTable( this.#info.data);
+      this.#renderTable(this.#info.data);
     }
 
     eventSave(event) {
-      this.querySelector('form').reset()
-      this.close(JSON.stringify(this.#info));
+      this.form.reset()
+      this.close(JSON.stringify(this.#info.data));
     }
     eventCancel(event) {
-      this.querySelector('form').reset()
+      this.form.reset()
       this.close("");
     }
 
@@ -107,23 +117,19 @@
       let item = {
         "idTemplateParent": idTemplate,
         "idTemplate": this.querySelector("#idTemplate").value,
-        "maxAllowed": parseInt(this.querySelector("#maxAllowed").value??0),
+        "maxAllowed": parseInt(this.querySelector("#maxAllowed").value ?? 0),
         "status": Enum.status.Inserted
       }
       this.#info.data.push(item);
-      this.querySelector('form').reset();
-      this.#renderTable( this.#info.data);
+      this.form.reset();
+      this.#renderTable(this.#info.data);
     }
 
     eventClickBtn(event) {
-      debugger
       const { tagName, dataset } = event.target
       if (tagName === "BUTTON") {
         if (dataset.action == "delete") {
           this.eventDelete(event)
-        }
-        if (dataset.action == "moveUp") {
-          this.eventMove(event, -1)
         }
       }
     }
@@ -132,48 +138,24 @@
       this.#info.data[index].status = Enum.status.Deleted;
       this.#renderTable(this.#info.data);
     }
-    eventMove(event, move) {
-      const index = parseInt(event.target.dataset.value);
-      this.#info.data[index + move].order = index;
-      this.#info.data[index].order = index + move;
-      this.#info.data[index].status = this.#info.data[index].status || Enum.status.Updated;
-      this.#info.data[index + move].status = this.#info.data[index + move].status || Enum.status.Updated;
-      this.#info.data = this.#info.data.sort((a, b) => a.order - b.order);
-      this.#renderTable( this.#info.data);
-    }
-    /***************************/
-    #loadTemplates(value = null) {
-      const cbTemplate = this.querySelector("#idTemplate");
-      cbTemplate.querySelectorAll("[value]").forEach(item => item.value != '' && cbTemplate.removeChild(item));
-      this.templates.forEach(item => {
-        let optionItem = document.createElement("OPTION")
-        optionItem.value = item.idTemplate
-        optionItem.textContent = item.name
-        if (value && value === item.idTemplate) {
-          optionItem.selected = true;
-        }
-        cbTemplate.appendChild(optionItem);
-      })
-    }
-    #renderTable( list) {
-      const listTable = list.map((item,index)=>{
-        const element ={...item};
-        element.idTemplate =  this.templates.filter(f=>f.idTemplate==item.idTemplate)[0]?.name;
-        element.index= index;
+
+    #renderTable(list) {
+      const listTable = list.map((item, index) => {
+        const element = { ...item };
+        element.idTemplate = this.templates.filter(f => f.idTemplate == item.idTemplate)[0]?.name;
+        element.index = index;
         return element;
       })
 
-      this.dataTable.setAttribute("items",JSON.stringify(listTable))
-      const btnClick = this.eventClickBtn.bind(this);
+      this.dataTable.setAttribute("items", JSON.stringify(listTable))
+
       const textClass = ['', 'text-primary', 'text-danger', 'text-success'];
-      this.dataTable.querySelectorAll("tbody tr").forEach((tr,index)=>{
-        tr.addEventListener("click", btnClick);
-        const status = list[index]?.status||Enum.status.None
+      this.dataTable.querySelectorAll("tbody tr").forEach((tr, index) => {
+        const status = list[index]?.status || Enum.status.None
         if (status > Enum.status.None) {
           tr.querySelectorAll("td").forEach(td => td.classList.add(textClass[status]))
         }
-      })      
-      this.dataTable.querySelector("thead").className="table-light text-center";
+      })
     }
   }
   window.customElements.define("dialog-template-children", DialogChildren, { extends: "dialog" });
