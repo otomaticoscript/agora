@@ -7,11 +7,11 @@
     }
   </style>
   <form id="formChildren" class="card" method="dialog">
-    <div class="card-header">
+    <header class="card-header">
       <button type="button" class="btn btn-close btn-outline-danger float-end" data-target="close"></button>
-      <div class="card-title"><i class="bi bi-pencil-square" style="font-size: 150%;"></i> Plantillas permitidas</div>
-    </div>
-    <div class="card-body">
+      <h3 class="card-title"><i class="bi bi-pencil-square" style="font-size: 150%;"></i> Plantillas permitidas</h3>
+    </header>
+    <main class="card-body">
       <div class="input-group">
         <label for="idTemplate" class="input-group-text" style="min-width: 75px;">Plantilla hija</label>
         <select class="form-select" id="idTemplate">
@@ -35,11 +35,11 @@
           </template>
         </data-table>
       </div>
-    </div>
-    <div class="card-footer text-end">
+    </main>
+    <footer class="card-footer text-end">
       <button class="btn btn-success me-2" id="save" type="submit"> Guardar</button>
       <button class="btn btn-secondary" data-target="close" id="cancel" type="reset"> Cancelar</button>
-    </div>
+    </footer>
   </form>
 </template>
 <script type="module">
@@ -66,7 +66,7 @@
 
       this.dataTable = this.querySelector("data-table");
       this.dataTable.setAttribute("header", JSON.stringify(this.header));
-      
+
       this.form = this.querySelector("form#formChildren")
 
       const onCancel = this.eventCancel.bind(this);
@@ -93,7 +93,7 @@
     openDialog(info) {
       this.showModal();
       if (info.idTemplate) {
-        info.data.forEach(data=>data.status = Enum.status.None)
+        info.data.forEach(data => data.status = Enum.status.None)
         this.#info = info;
       } else {
         throw new Error("Error esta modal no ha recibido datos")

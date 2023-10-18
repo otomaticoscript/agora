@@ -1,10 +1,10 @@
 <template id="dialog-option">
   <form id="formMasterOption" class="card" method="dialog">
-    <div class="card-header">
+    <header class="card-header">
       <button type="button" class="btn btn-close btn-outline-danger float-end" data-target="close"></button>
-      <div class="card-title"><i class="bi" style="font-size: 150%;"></i> Opciones de Maestro</div>
-    </div>
-    <div class="card-body">
+      <h3 class="card-title"><i class="bi" style="font-size: 150%;"></i> Opciones de Maestro</h3>
+    </header>
+    <main class="card-body">
       <div class="input-group">
         <label for="name" class="input-group-text btn-secondary">Opcion</label>
         <input type="text" class="form-control" id="name" placeholder="Nombre" />
@@ -27,11 +27,11 @@
           </template>
         </data-table>
       </div>
-    </div>
-    <div class="card-footer text-end">
+    </main>
+    <footer class="card-footer text-end">
       <button class="btn btn-success me-2" id="save" type="submit"> Guardar</button>
       <button class="btn btn-secondary" data-target="close" id="cancel" type="reset"> Cancelar</button>
-    </div>
+    </footer>
   </form>
 </template>
 <script type="module">

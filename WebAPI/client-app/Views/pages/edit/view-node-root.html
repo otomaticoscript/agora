@@ -1,21 +1,14 @@
 <template id="template-node">
     <div class="card text-bg-light">
         <div class="card-header">
-            <h2 class="float-start">Tree</h2>
+            <h2 class="float-start">Arbol</h2>
             <span class="float-end mt-1 me-1">
                 <button class="btn btn-primary bi bi-file-plus" title="New Tree" data-action="new">Nuevo</button>
             </span>
         </div>
         <div class="card-body">
-            <data-table :class-table="table table-white table-bordered" :class-thead="table-light text-center"
-                header="{}" items="[]">
+            <data-table :class-table="table table-white table-bordered" :class-thead="table-light text-center">
                 <template>
-                    <div slot="header">
-                        <th>#</th>
-                        <th style="width: 40%">Nombre</th>
-                        <th style="width: 30%">Fecha Modificacion</th>
-                        <th style="width: 30%;">Acciones</th>
-                    </div>
                     <div slot="action" class="text-end">
                         <button type="button" title="View Tree"
                             class="btn btn-outline-primary rounded-pill bi bi-eye btn-sm" data-action="view"
@@ -40,7 +33,7 @@
             { text: "Nombre", value: "name" },
             { text: "Tipo Plantilla", value: "nameTemplate", style: { width: "30%" } },
             { text: "Actualizado", value: "modifyDate", style: { width: "20%" } },
-            { text: "", value: "idNode", slot: "action", style: { width: "20%" } }
+            { text: "", slot: "action", style: { width: "20%" } }
         ]
 
         constructor() {
