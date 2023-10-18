@@ -44,9 +44,9 @@
             { text: "Fecha Modificacion", value: "modifyDate", style: { width: "30%" } },
             { text: "", value: "index", slot: "action", style: { width: "30%" } }
         ]
+        templates = []
         constructor() {
             super()
-            this.templates = []
         }
         connectedCallback() {
             const template = document.querySelector('#template-template')?.content?.cloneNode(true)
@@ -85,7 +85,7 @@
                     item.modifyDate = item.modifyDate.replace(/(T|Z)|(\+.*)/g, ' ').trim()
                     item.index = index
                 })
-                this.#dispatcherTable(data)
+                this.dataTable.setAttribute("items",JSON.stringify(data));
             }
         }
         eventClickBtn(event) {
@@ -203,7 +203,6 @@
                     }
                 }
                 if (dataDelete.length > 0) {
-                    debugger
                     for (let index = 0; index < dataDelete.length; index++) {
                         if (masterKey !== '') {
                             url = `${url}/${dataDelete[index][masterKey]}`
@@ -216,10 +215,7 @@
                 }
             }
         }
-
-        #dispatcherTable(data) {
-            this.dataTable.setAttribute("items", JSON.stringify(data))
-        }
     }
+
     window.customElements.define('view-template', TemplateView)
 </script>

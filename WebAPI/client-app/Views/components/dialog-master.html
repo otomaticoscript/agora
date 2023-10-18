@@ -59,6 +59,7 @@ export default class DialogMaster extends HTMLDialogElement{
 
     eventSave(event) {
       this.#data.name=this.querySelector("#name").value
+      this.#data.modifyDate = (new Date()).toISOString()
       this.close(JSON.stringify(this.#data));
     }
 

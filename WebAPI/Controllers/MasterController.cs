@@ -26,6 +26,7 @@ namespace Agora.WebAPI.Controllers
             return new JsonResult(result);
         }
         [HttpPut]
+        [HttpPost]
         public async Task SetMaster(Master master)
         {
             await _masterManager.SetMaster(master);
